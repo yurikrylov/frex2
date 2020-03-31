@@ -17,13 +17,27 @@ app.get('/', async function (req, res) {
 	var output = Mustache.render(data, view);
   	res.send(output);
 });
-app.get('/', async function (req, res) {
-	const client = new Client("tcp://frex:1@127.0.0.1:5432/frex");
-	await client.connect()
-	const res2 = await client.query("select string_id, text_en, text_ru from ep_text");
-	await client.end()
+app.get('/public/allseasons.html', async function (req, res) {
 
 	let data = await readFileAsync ("./public/allseasons.html", "utf8");
+	let content = "";
+
+	var view = {
+	  content
+	};
+	var output = Mustache.render(data, view);
+  	res.send(output);
+});
+
+app.get('/episodes/:episodeID', async function (req, res) {
+	const p1 = req.params[0];
+	const client = new Client("tcp://frex:1@127.0.0.1:5432/frex");
+	await client.connect()
+	const res2 = await client.query("select string_id, text_en, text_ru from ep_text where string_id=$1",p1);
+
+	await client.end()
+
+	let data = await readFileAsync ("./public/episode.html", "utf8");
 	let content = "";
 
 	res2.rows.forEach (row => {
@@ -35,7 +49,6 @@ app.get('/', async function (req, res) {
 	var output = Mustache.render(data, view);
   	res.send(output);
 });
-
 app.get('/public/style/*', async function (req, res) {
 	let data = await readFileAsync ("." + req.url, "utf8");
 
