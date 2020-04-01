@@ -34,7 +34,6 @@ app.get('/episodes/:episodeID', async function (req, res) {
 	const client = new Client("tcp://frex:1@127.0.0.1:5432/frex");
 	await client.connect()
 	const res2 = await client.query("select string_id, text_en, text_ru from ep_text where string_id=$1",[p1]);
-	console.log(p1);
 
 	await client.end()
 
