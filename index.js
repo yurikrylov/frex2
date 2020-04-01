@@ -33,7 +33,8 @@ app.get('/episodes/:episodeID', async function (req, res) {
 	const p1 = req.params[0];
 	const client = new Client("tcp://frex:1@127.0.0.1:5432/frex");
 	await client.connect()
-	const res2 = await client.query("select string_id, text_en, text_ru from ep_text where string_id=$1",p1);
+	const res2 = await client.query("select string_id, text_en, text_ru from ep_text where string_id=$1",[p1]);
+	console.log(p1);
 
 	await client.end()
 
@@ -41,7 +42,10 @@ app.get('/episodes/:episodeID', async function (req, res) {
 	let content = "";
 
 	res2.rows.forEach (row => {
-		content += `<div><a href="#" onClick="document.getElementById ('${row.string_id}').style.display = 'block';">${row.text_en}</a><div id="${row.string_id}" style="display: none">${row.text_ru}</div></div>`;
+		content += `<div>
+						<a href="#" onClick="document.getElementById ('${row.string_id}').style.display = 'block';">${row.text_en}</a>
+						<div id="${row.string_id}" style="display: none">${row.text_ru}</div>
+					</div>`;
 	});
 	var view = {
 	  content
